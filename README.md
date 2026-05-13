@@ -23,6 +23,8 @@ Institution: Bversity School of Biosciences
 
 PDOs are currently among the most predictive preclinical cancer models available, achieving high sensitivity in treatment response prediction compared to conventional 2D culture systems. However, scalability limitations make them impractical for large-scale screening workflows. This project addresses that bottleneck computationally.
 
+🚀 **Live Demo:** [in-silico-organoid-twins.vercel.app](https://in-silico-organoid-twins.vercel.app/)
+
 ---
 
 Problem Statement
