@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>In Silico Organoid Twins — Precision Drug Screening Platform</title>
+<meta name="description" content="A computational platform that replicates how a patient's tumour responds to cancer drugs, delivering results in hours, not weeks.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:#F7F4EF;color:#2C2C2C;font-size:14px;font-weight:400;line-height:1.6;padding-top:64px;}
+.container{max-width:1200px;margin:0 auto;}
+section{padding:80px 40px;}
+h1{font-size:28px;font-weight:700;color:#2C2C2C;line-height:1.3;}
+h2{font-size:18px;font-weight:600;color:#2C2C2C;margin-bottom:8px;}
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#fff;border-bottom:1px solid #E8E3DB;height:64px;display:flex;align-items:center;padding:0 40px;}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;}
+.nav-brand{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700;color:#2C2C2C;text-decoration:none;}
+.nav-dot{width:12px;height:12px;border-radius:50%;background:#4A7C59;flex-shrink:0;}
+.nav-links{display:flex;gap:28px;}
+.nav-links a{text-decoration:none;color:#2C2C2C;font-size:14px;font-weight:500;position:relative;padding-bottom:2px;}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:#4A7C59;transition:width .15s ease;}
+.nav-links a:hover::after{width:100%;}
+/* SECTION ANIMATIONS */
+.fade-section{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease;}
+.fade-section.visible{opacity:1;transform:translateY(0);}
+/* OVERVIEW */
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.overview-headline{font-size:28px;font-weight:700;color:#2C2C2C;margin-bottom:12px;line-height:1.3;}
+.overview-sub{font-size:16px;color:#555;margin-bottom:32px;line-height:1.7;}
+.stats-row{display:flex;gap:20px;margin-bottom:28px;}
+.stat-card{background:#fff;border:1px solid #E8E3DB;border-radius:10px;padding:20px 24px;flex:1;text-align:center;}
+.stat-value{font-size:36px;font-weight:700;color:#4A7C59;line-height:1.1;}
+.stat-label{font-size:13px;color:#666;margin-top:6px;}
+.overview-text{font-size:14px;color:#2C2C2C;line-height:1.8;}
+/* CHART */
+.chart-wrap{background:#fff;border:1px solid #E8E3DB;border-radius:12px;padding:28px 32px 20px;}
+.chart-title{font-size:16px;font-weight:600;text-align:center;margin-bottom:24px;}
+.chart-container{position:relative;padding-left:48px;}
+.chart-axis-y{position:absolute;left:0;top:50%;transform:rotate(-90deg) translateX(-50%);transform-origin:top left;font-size:11px;color:#888;white-space:nowrap;}
+.chart-labels-row{display:flex;justify-content:center;gap:40px;margin-bottom:6px;padding-left:0;}
+.chart-bar-label{font-size:11px;color:#666;font-weight:600;text-align:center;width:80px;}
+.chart-area{display:flex;align-items:flex-end;justify-content:center;gap:40px;height:220px;border-left:1px solid #ccc;border-bottom:1px solid #ccc;padding:0 24px;}
+.chart-bar-wrap{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+.chart-bar{width:56px;border-radius:6px 6px 0 0;animation:growBar .8s ease-out forwards;transform-origin:bottom;}
+@keyframes growBar{from{transform:scaleY(0);}to{transform:scaleY(1);}}
+.chart-names-row{display:flex;justify-content:center;gap:40px;margin-top:8px;}
+.chart-bar-name{font-size:12px;color:#2C2C2C;text-align:center;width:80px;}
+.chart-axis-x{text-align:center;font-size:11px;color:#888;margin-top:8px;}
+/* HOW IT WORKS */
+.pipeline-section{background:#F7F4EF;}
+.section-title{font-size:28px;font-weight:700;text-align:center;margin-bottom:8px;}
+.section-subtitle{font-size:15px;color:#666;text-align:center;margin-bottom:48px;max-width:640px;margin-left:auto;margin-right:auto;}
+.pipeline{display:flex;align-items:flex-start;gap:0;justify-content:center;flex-wrap:wrap;}
+.pipeline-step{background:#fff;border:1px solid #E8E3DB;border-radius:12px;padding:28px 22px;width:200px;position:relative;opacity:0;transform:translateX(-30px);transition:opacity .5s ease,transform .5s ease;}
+.pipeline-step.visible{opacity:1;transform:translateX(0);}
+.pipeline-step-num{font-size:48px;font-weight:700;color:#4A7C59;line-height:1;margin-bottom:10px;}
+.pipeline-step-title{font-size:15px;font-weight:600;color:#2C2C2C;margin-bottom:8px;}
+.pipeline-step-text{font-size:13px;color:#555;line-height:1.6;}
+.pipeline-arrow{display:flex;align-items:center;padding-top:40px;color:#E8E3DB;font-size:24px;}
+.pipeline-arrow svg{width:28px;height:28px;fill:none;stroke:#C0B9A8;stroke-width:2;}
+/* 3D MODEL */
+.model-section{text-align:center;}
+.model-canvas-wrap{position:relative;width:700px;max-width:100%;height:500px;margin:0 auto 24px;background:#F0EDE8;border-radius:12px;overflow:hidden;border:1px solid #E8E3DB;}
+.model-canvas-wrap canvas{display:block;width:100%!important;height:100%!important;}
+.legend{display:flex;justify-content:center;gap:28px;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:13px;color:#555;}
+.legend-swatch{width:16px;height:16px;border-radius:4px;flex-shrink:0;}
+/* HEATMAP */
+.heatmap-section{text-align:center;}
+.heatmap-wrap{display:flex;justify-content:center;gap:0;margin-top:32px;overflow-x:auto;}
+.heatmap-labels{display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:4px;gap:2px;}
+.heatmap-label{height:48px;display:flex;align-items:center;justify-content:flex-end;padding-right:12px;font-size:13px;font-weight:500;color:#2C2C2C;white-space:nowrap;}
+.heatmap-grid-wrap{display:flex;flex-direction:column;align-items:flex-start;}
+.heatmap-col-labels{display:flex;gap:2px;margin-bottom:6px;padding-left:0;}
+.heatmap-col-label{width:64px;font-size:11px;color:#555;transform:rotate(-45deg);transform-origin:bottom left;text-align:left;height:60px;display:flex;align-items:flex-end;padding-bottom:4px;white-space:nowrap;}
+.heatmap-grid{display:grid;grid-template-columns:repeat(12,64px);gap:2px;}
+.heatmap-cell{width:64px;height:48px;border-radius:4px;cursor:pointer;transition:transform .15s,box-shadow .15s;opacity:0;transition:opacity .4s ease,transform .15s,box-shadow .15s;}
+.heatmap-cell.visible{opacity:1;}
+.heatmap-cell:hover{transform:scale(1.08);box-shadow:0 2px 8px rgba(0,0,0,.15);z-index:2;position:relative;}
+.heatmap-tooltip{position:fixed;background:#fff;border:1px solid #E8E3DB;border-radius:8px;padding:10px 14px;font-size:12px;line-height:1.7;box-shadow:0 4px 16px rgba(0,0,0,.1);pointer-events:none;z-index:999;display:none;text-align:left;max-width:260px;}
+.summary-bar{background:#EAF4EE;border-left:4px solid #4A7C59;padding:12px 16px;font-size:14px;color:#2C2C2C;text-align:left;max-width:900px;margin:24px auto 0;border-radius:0 6px 6px 0;line-height:1.7;}
+/* SIMULATION */
+.sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;text-align:left;}
+.form-group{margin-bottom:20px;}
+.form-label{display:block;font-size:13px;font-weight:600;color:#2C2C2C;margin-bottom:6px;}
+.form-input,.form-select{border:1px solid #E8E3DB;border-radius:6px;padding:10px 14px;font-size:14px;font-family:'Inter',sans-serif;width:100%;background:#fff;color:#2C2C2C;outline:none;transition:border-color .15s;}
+.form-input:focus,.form-select:focus{outline:2px solid #4A7C59;outline-offset:2px;border-color:#4A7C59;}
+.radio-group{display:flex;gap:16px;flex-wrap:wrap;}
+.radio-group label{display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;}
+.radio-group input[type="radio"]{accent-color:#4A7C59;width:16px;height:16px;}
+/* TOGGLE */
+.toggle-wrap{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.toggle-input{display:none;}
+.toggle-slider{width:44px;height:24px;background:#ccc;border-radius:12px;position:relative;cursor:pointer;transition:background .2s;}
+.toggle-input:checked+.toggle-slider{background:#4A7C59;}
+.toggle-slider::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .2s;}
+.toggle-input:checked+.toggle-slider::after{transform:translateX(20px);}
+.toggle-label{font-size:14px;color:#2C2C2C;}
+/* FILE DROP */
+.file-drop{border:2px dashed #E8E3DB;border-radius:8px;padding:28px 20px;text-align:center;color:#999;font-size:13px;cursor:pointer;transition:border-color .15s,background .15s;}
+.file-drop:hover{border-color:#4A7C59;background:#f5f9f6;}
+.file-drop input[type="file"]{display:none;}
+/* BUTTON */
+.btn-primary{background:#4A7C59;color:#fff;font-size:14px;font-family:'Inter',sans-serif;font-weight:600;padding:12px 32px;border:none;border-radius:6px;cursor:pointer;transition:background .15s;}
+.btn-primary:hover{background:#3A6B49;}
+/* OUTPUT PANEL */
+.output-panel{min-height:300px;}
+.output-placeholder{border:2px dashed #E8E3DB;border-radius:10px;padding:60px 20px;text-align:center;color:#9E9E9E;font-size:14px;}
+.spinner-wrap{text-align:center;padding:60px 20px;}
+.spinner{width:36px;height:36px;border:3px solid #E8E3DB;border-top-color:#4A7C59;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spinner-text{font-size:14px;color:#666;}
+/* RESULTS */
+.results-panel{background:#fff;border:1px solid #E8E3DB;border-radius:12px;padding:28px;animation:fadeIn .4s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.results-header{font-size:18px;font-weight:700;color:#2C2C2C;margin-bottom:4px;}
+.results-sub{font-size:13px;color:#666;margin-bottom:4px;}
+.results-time{font-size:12px;color:#999;margin-bottom:20px;}
+.drug-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.drug-rank{font-size:18px;font-weight:700;color:#4A7C59;width:28px;text-align:center;flex-shrink:0;}
+.drug-info{flex:1;min-width:0;}
+.drug-name{font-size:15px;font-weight:700;color:#2C2C2C;}
+.drug-mech{font-size:13px;color:#666;}
+.drug-bar-track{width:100%;height:8px;background:#E8E3DB;border-radius:4px;overflow:hidden;margin-top:4px;}
+.drug-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#C0392B 0%,#E67E22 40%,#27AE60 100%);transition:width 1s ease;}
+.drug-pct{font-size:14px;font-weight:700;color:#4A7C59;width:48px;text-align:right;flex-shrink:0;}
+.note-card{background:#EAF4EE;border-left:4px solid #4A7C59;padding:10px 16px;font-size:13px;color:#2C2C2C;border-radius:0 6px 6px 0;margin-top:10px;line-height:1.6;}
+.results-disclaimer{font-size:12px;color:#999;margin-top:20px;padding-top:14px;border-top:1px solid #E8E3DB;}
+/* FOOTER */
+.footer{background:#2C2C2C;color:#fff;padding:40px;}
+.footer-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 2fr 1fr;gap:32px;align-items:start;}
+.footer-brand{font-size:16px;font-weight:700;}
+.footer-brand-sub{font-size:13px;color:#aaa;margin-top:6px;}
+.footer-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;text-align:center;}
+.footer-col-title{font-size:12px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.footer-col-text{font-size:13px;color:#ddd;line-height:1.6;}
+.footer-right{font-size:13px;color:#bbb;line-height:1.7;text-align:right;}
+/* RESPONSIVE */
+@media(max-width:768px){
+section{padding:48px 20px;}
+.overview-grid,.sim-grid{grid-template-columns:1fr;}
+.stats-row{flex-direction:column;}
+.pipeline{flex-direction:column;align-items:center;}
+.pipeline-arrow{transform:rotate(90deg);padding:10px 0;}
+.model-canvas-wrap{height:320px;}
+.heatmap-wrap{justify-content:flex-start;}
+.footer-inner{grid-template-columns:1fr;text-align:center;}
+.footer-cols{grid-template-columns:1fr;}
+.footer-right{text-align:center;}
+.nav{padding:0 16px;}
+.nav-links{gap:14px;}
+.nav-links a{font-size:12px;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+<div class="nav-inner">
+<a href="#overview" class="nav-brand"><span class="nav-dot"></span>In Silico Organoid Twins</a>
+<div class="nav-links">
+<a href="#overview">Overview</a>
+<a href="#how-it-works">How It Works</a>
+<a href="#3d-model">3D Model</a>
+<a href="#drug-screening">Drug Screening</a>
+<a href="#simulation">Simulation</a>
+</div>
+</div>
+</nav>
+
+<!-- SECTION 1: OVERVIEW -->
+<section id="overview" class="container fade-section">
+<div class="overview-grid">
+<div>
+<h1 class="overview-headline">Precision Drug Screening. No Lab Required.</h1>
+<p class="overview-sub">A computational platform that replicates how a patient's tumour responds to cancer drugs — delivering results in hours, not weeks.</p>
+<div class="stats-row">
+<div class="stat-card"><div class="stat-value" data-target="95" data-suffix="%">0%</div><div class="stat-label">Reduction in cost per test</div></div>
+<div class="stat-card"><div class="stat-value" data-target="4" data-prefix="< " data-suffix=" hrs">0</div><div class="stat-label">From biopsy data to drug response</div></div>
+<div class="stat-card"><div class="stat-value" data-target="10000" data-suffix="+" data-format="comma">0</div><div class="stat-label">Virtual compounds screened per hour</div></div>
+</div>
+<p class="overview-text">Traditional drug testing grows patient tumour cells in a laboratory — a process that takes 4 to 6 weeks, costs over $10,000 per panel, and produces inconsistent results. In Silico Organoid Twins replaces the laboratory with a validated computational model, using the patient's own genomic and imaging data to predict which drugs will work — and which will not.</p>
+</div>
+<div>
+<div class="chart-wrap">
+<div class="chart-title">Predictive Accuracy Comparison</div>
+<div class="chart-container">
+<span class="chart-axis-y">Predictive Accuracy (%)</span>
+<div class="chart-labels-row">
+<div class="chart-bar-label">~50% accuracy</div>
+<div class="chart-bar-label">80-90% accuracy</div>
+<div class="chart-bar-label">Target ~95%</div>
+</div>
+<div class="chart-area">
+<div class="chart-bar-wrap"><div class="chart-bar" style="height:110px;background:#C0392B;"></div></div>
+<div class="chart-bar-wrap"><div class="chart-bar" style="height:187px;background:#8B5E3C;"></div></div>
+<div class="chart-bar-wrap"><div class="chart-bar" style="height:209px;background:#4A7C59;"></div></div>
+</div>
+<div class="chart-names-row">
+<div class="chart-bar-name">2D Cell Culture</div>
+<div class="chart-bar-name">Patient Organoids</div>
+<div class="chart-bar-name">In Silico Twin</div>
+</div>
+<div class="chart-axis-x">Screening Method</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- SECTION 2: HOW IT WORKS -->
+<section id="how-it-works" class="pipeline-section fade-section">
+<div class="container">
+<div class="section-title">Five Computational Layers</div>
+<p class="section-subtitle">Each layer processes a different dimension of the patient's biological data.</p>
+<div class="pipeline">
+<div class="pipeline-step" data-delay="0"><div class="pipeline-step-num">01</div><div class="pipeline-step-title">Patient Data Input</div><div class="pipeline-step-text">The platform reads the patient's next-generation sequencing files and histological biopsy images. These files are the only clinical inputs required.</div></div>
+<div class="pipeline-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+<div class="pipeline-step" data-delay="1"><div class="pipeline-step-num">02</div><div class="pipeline-step-title">Organoid Geometry Reconstruction</div><div class="pipeline-step-text">A U-Net convolutional neural network analyses the biopsy image to reconstruct the three-dimensional architecture of the patient's tumour organoid. This geometry determines how drugs physically penetrate the tissue.</div></div>
+<div class="pipeline-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+<div class="pipeline-step" data-delay="2"><div class="pipeline-step-num">03</div><div class="pipeline-step-title">Cell Behaviour Simulation</div><div class="pipeline-step-text">Single-cell RNA sequencing data is fed into an agent-based model running on the PhysiCell framework. Each virtual cell is individually programmed to grow, divide, signal, or die according to the patient's gene expression profile.</div></div>
+<div class="pipeline-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+<div class="pipeline-step" data-delay="3"><div class="pipeline-step-num">04</div><div class="pipeline-step-title">Drug Diffusion Modelling</div><div class="pipeline-step-text">Partial differential equations compute how each candidate drug molecule moves through the virtual organoid volume, accounting for absorption, metabolism, and concentration gradients across the tumour.</div></div>
+<div class="pipeline-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+<div class="pipeline-step" data-delay="4"><div class="pipeline-step-num">05</div><div class="pipeline-step-title">Response Output</div><div class="pipeline-step-text">The platform outputs IC50 curves, dose-response profiles, and drug synergy maps. An oncologist receives a ranked list of effective drugs specific to that patient's tumour within four hours of data upload.</div></div>
+</div>
+</div>
+</section>
+
+<!-- SECTION 3: 3D MODEL -->
+<section id="3d-model" class="model-section container fade-section">
+<div class="section-title">Virtual Organoid — Interactive Model</div>
+<p class="section-subtitle">Rotate and zoom to explore the computational representation of a patient tumour organoid. Colour indicates cell activity level.</p>
+<div class="model-canvas-wrap" id="threejs-container"></div>
+<div class="legend">
+<div class="legend-item"><div class="legend-swatch" style="background:#27AE60;"></div>Low activity / Healthy cells</div>
+<div class="legend-item"><div class="legend-swatch" style="background:#E67E22;"></div>Moderate activity</div>
+<div class="legend-item"><div class="legend-swatch" style="background:#C0392B;"></div>High activity / Aggressive cells</div>
+</div>
+</section>
+
+<!-- SECTION 4: DRUG SCREENING -->
+<section id="drug-screening" class="heatmap-section container fade-section">
+<div class="section-title">Drug Response Heatmap</div>
+<p class="section-subtitle">Predicted sensitivity of this patient's tumour to 12 candidate drugs across 6 biological pathway targets. Darker green indicates stronger tumour suppression.</p>
+<div class="heatmap-wrap">
+<div class="heatmap-labels" id="heatmap-labels"></div>
+<div class="heatmap-grid-wrap">
+<div class="heatmap-col-labels" id="heatmap-col-labels"></div>
+<div class="heatmap-grid" id="heatmap-grid"></div>
+</div>
+</div>
+<div id="heatmap-tooltip" class="heatmap-tooltip"></div>
+<div class="summary-bar">Top recommended drugs for this patient: <strong>Erlotinib</strong> (EGFR, 0.91) &nbsp;|&nbsp; <strong>Olaparib</strong> (DDR, 0.93) &nbsp;|&nbsp; <strong>Palbociclib</strong> (CDK, 0.87) &nbsp;|&nbsp; <strong>Ribociclib</strong> (CDK, 0.91)</div>
+</section>
+
+<!-- SECTION 5: SIMULATION -->
+<section id="simulation" class="container fade-section">
+<div class="section-title" style="text-align:left;">Patient Simulation — Live Demo</div>
+<p class="section-subtitle" style="text-align:left;margin-left:0;">Enter patient parameters below to generate a mock drug screening report. This demonstrates the clinical workflow an oncologist would follow.</p>
+<div class="sim-grid">
+<div>
+<div class="form-group"><label class="form-label" for="patientId">Patient ID</label><input type="text" class="form-input" id="patientId" placeholder="e.g. PT-00142"></div>
+<div class="form-group"><label class="form-label" for="cancerType">Cancer Type</label><select class="form-select" id="cancerType"><option>Non-Small Cell Lung Cancer</option><option>Colorectal Adenocarcinoma</option><option>Triple-Negative Breast Cancer</option><option>Glioblastoma Multiforme</option><option>Pancreatic Ductal Adenocarcinoma</option></select></div>
+<div class="form-group"><label class="form-label">Tumour Stage</label><div class="radio-group"><label><input type="radio" name="stage" value="I" checked>Stage I</label><label><input type="radio" name="stage" value="II">Stage II</label><label><input type="radio" name="stage" value="III">Stage III</label><label><input type="radio" name="stage" value="IV">Stage IV</label></div></div>
+<div class="form-group">
+<div class="toggle-wrap"><input type="checkbox" class="toggle-input" id="egfrToggle"><label class="toggle-slider" for="egfrToggle"></label><span class="toggle-label">EGFR Mutation Detected</span></div>
+<div class="toggle-wrap"><input type="checkbox" class="toggle-input" id="tp53Toggle" checked><label class="toggle-slider" for="tp53Toggle"></label><span class="toggle-label">TP53 Mutation Detected</span></div>
+</div>
+<div class="form-group"><label class="form-label">Upload NGS File</label><div class="file-drop" id="fileDrop"><input type="file" id="fileInput" accept=".vcf,.fastq">Drop NGS file here or click to select (.vcf, .fastq)</div></div>
+<button class="btn-primary" id="runSimBtn">Run Simulation</button>
+</div>
+<div class="output-panel" id="outputPanel">
+<div class="output-placeholder">Results will appear here after simulation runs.</div>
+</div>
+</div>
+</section>
+
+<footer class="footer">
+<div class="footer-inner">
+<div><div class="footer-brand">In Silico Organoid Twins</div><div class="footer-brand-sub">Bversity School of Biosciences</div></div>
+<div class="footer-cols">
+<div><div class="footer-col-title">Team</div><div class="footer-col-text">Nandini Solanki<br>Vidit Jain<br>V. Subharaga</div></div>
+<div><div class="footer-col-title">Category</div><div class="footer-col-text">Biomedical Engineering and Digital Health Technologies</div></div>
+<div><div class="footer-col-title">Program</div><div class="footer-col-text">All-Russian Scientific School — Young Medicine</div></div>
+</div>
+<div class="footer-right">A computational platform for patient-specific oncology drug screening.</div>
+</div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+
+// ===== INTERSECTION OBSERVER FOR FADE-IN =====
+(function(){
+  var sections = document.querySelectorAll('.fade-section');
+  var stagger = 0;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  },{threshold:0.1});
+  sections.forEach(function(s,i){
+    s.style.transitionDelay=(i*0.15)+'s';
+    io.observe(s);
+  });
+})();
+
+// ===== PIPELINE STEP ANIMATION =====
+(function(){
+  var steps=document.querySelectorAll('.pipeline-step');
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        var d=parseInt(e.target.getAttribute('data-delay'))||0;
+        setTimeout(function(){e.target.classList.add('visible');},d*100);
+        io.unobserve(e.target);
+      }
+    });
+  },{threshold:0.15});
+  steps.forEach(function(s){io.observe(s);});
+})();
+
+// ===== COUNT-UP ANIMATION =====
+(function(){
+  var statVals=document.querySelectorAll('.stat-value');
+  var counted=false;
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting&&!counted){
+        counted=true;
+        statVals.forEach(function(el){
+          var target=parseInt(el.getAttribute('data-target'));
+          var prefix=el.getAttribute('data-prefix')||'';
+          var suffix=el.getAttribute('data-suffix')||'';
+          var fmt=el.getAttribute('data-format');
+          var start=0;var duration=1200;var startTime=null;
+          function animate(ts){
+            if(!startTime)startTime=ts;
+            var progress=Math.min((ts-startTime)/duration,1);
+            var val=Math.floor(progress*target);
+            if(fmt==='comma')el.textContent=prefix+val.toLocaleString()+suffix;
+            else el.textContent=prefix+val+suffix;
+            if(progress<1)requestAnimationFrame(animate);
+            else{
+              if(fmt==='comma')el.textContent=prefix+target.toLocaleString()+suffix;
+              else el.textContent=prefix+target+suffix;
+            }
+          }
+          requestAnimationFrame(animate);
+        });
+        io.disconnect();
+      }
+    });
+  },{threshold:0.3});
+  statVals.forEach(function(s){io.observe(s);});
+})();
+
+// ===== THREE.JS ORGANOID =====
+(function(){
+  var container=document.getElementById('threejs-container');
+  if(!container||typeof THREE==='undefined')return;
+  var w=container.clientWidth,h=container.clientHeight;
+  var scene=new THREE.Scene();
+  scene.background=new THREE.Color(0xF0EDE8);
+  var camera=new THREE.PerspectiveCamera(45,w/h,1,1000);
+  camera.position.set(0,0,200);
+  var renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(w,h);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  container.appendChild(renderer.domElement);
+  var canvas=renderer.domElement;
+
+  // Lighting
+  scene.add(new THREE.AmbientLight(0xffffff,0.4));
+  var dLight=new THREE.DirectionalLight(0xffffff,0.9);
+  dLight.position.set(5,10,7);scene.add(dLight);
+  var pLight=new THREE.PointLight(0xF9E4C8,0.5);
+  pLight.position.set(-5,-5,5);scene.add(pLight);
+
+  var group=new THREE.Group();
+  // Central sphere
+  var coreMat=new THREE.MeshPhongMaterial({color:0x4A7C59,transparent:true,opacity:0.85});
+  var coreGeo=new THREE.SphereGeometry(60,32,32);
+  group.add(new THREE.Mesh(coreGeo,coreMat));
+
+  // Helper: lerp color
+  function lerpColor(a,b,t){
+    var c=new THREE.Color();
+    var ca=new THREE.Color(a),cb=new THREE.Color(b);
+    c.r=ca.r+(cb.r-ca.r)*t;c.g=ca.g+(cb.g-ca.g)*t;c.b=ca.b+(cb.b-ca.b)*t;
+    return c;
+  }
+
+  // 18 outer spheres
+  for(var i=0;i<18;i++){
+    var r=12+Math.random()*10;
+    var phi=Math.acos(2*Math.random()-1);
+    var theta=Math.random()*Math.PI*2;
+    var dist=70+Math.random()*30;
+    var x=dist*Math.sin(phi)*Math.cos(theta);
+    var y=dist*Math.sin(phi)*Math.sin(theta);
+    var z=dist*Math.cos(phi);
+    var activity=Math.random();
+    var col=lerpColor(0x27AE60,0xC0392B,activity);
+    var mat=new THREE.MeshPhongMaterial({color:col,transparent:true,opacity:0.9});
+    var mesh=new THREE.Mesh(new THREE.SphereGeometry(r,24,24),mat);
+    mesh.position.set(x,y,z);
+    group.add(mesh);
+  }
+
+  // 6 necrotic core cells
+  for(var j=0;j<6;j++){
+    var nr=4+Math.random()*3;
+    var nx=(Math.random()-0.5)*60;
+    var ny=(Math.random()-0.5)*60;
+    var nz=(Math.random()-0.5)*60;
+    var nm=new THREE.MeshPhongMaterial({color:0x8B5E3C,transparent:true,opacity:0.9});
+    var nmesh=new THREE.Mesh(new THREE.SphereGeometry(nr,16,16),nm);
+    nmesh.position.set(nx,ny,nz);
+    group.add(nmesh);
+  }
+
+  scene.add(group);
+
+  // Mouse drag rotation
+  var isDragging=false,prevX=0,prevY=0,interacting=false;
+  canvas.addEventListener('mousedown',function(e){isDragging=true;prevX=e.clientX;prevY=e.clientY;interacting=true;canvas.style.pointerEvents='auto';});
+  window.addEventListener('mousemove',function(e){
+    if(!isDragging)return;
+    var dx=e.clientX-prevX,dy=e.clientY-prevY;
+    group.rotation.y+=dx*0.005;
+    group.rotation.x+=dy*0.005;
+    prevX=e.clientX;prevY=e.clientY;
+  });
+  window.addEventListener('mouseup',function(){isDragging=false;setTimeout(function(){interacting=false;canvas.style.pointerEvents='none';},100);});
+
+  // Scroll zoom
+  container.addEventListener('wheel',function(e){
+    e.preventDefault();
+    camera.position.z=Math.max(100,Math.min(300,camera.position.z+e.deltaY*0.05));
+  },{passive:false});
+
+  // Pointer events management
+  canvas.style.pointerEvents='none';
+  container.addEventListener('mouseenter',function(){canvas.style.pointerEvents='auto';});
+  container.addEventListener('mouseleave',function(){if(!isDragging)canvas.style.pointerEvents='none';});
+
+  // Animate
+  function animate(){
+    requestAnimationFrame(animate);
+    if(!isDragging){group.rotation.y+=0.003;group.rotation.x+=0.001;}
+    renderer.render(scene,camera);
+  }
+  animate();
+
+  // Resize
+  window.addEventListener('resize',function(){
+    var ww=container.clientWidth,hh=container.clientHeight;
+    camera.aspect=ww/hh;camera.updateProjectionMatrix();
+    renderer.setSize(ww,hh);
+  });
+})();
+
+// ===== HEATMAP =====
+(function(){
+  var drugs=['Erlotinib','Bevacizumab','Everolimus','Alpelisib','Olaparib','Palbociclib','Osimertinib','Ramucirumab','Temsirolimus','Idelalisib','Talazoparib','Ribociclib'];
+  var pathways=['EGFR Pathway','VEGF / Angiogenesis','mTOR Signalling','PI3K / AKT Axis','DNA Damage Repair','Cell Cycle (CDK4/6)'];
+  var data=[
+    [0.91,0.44,0.22,0.38,0.15,0.28,0.88,0.41,0.19,0.33,0.12,0.25],
+    [0.31,0.87,0.52,0.29,0.41,0.18,0.34,0.82,0.47,0.26,0.38,0.21],
+    [0.19,0.35,0.89,0.61,0.28,0.44,0.22,0.31,0.92,0.58,0.25,0.41],
+    [0.42,0.28,0.67,0.88,0.35,0.51,0.38,0.24,0.61,0.91,0.32,0.48],
+    [0.15,0.32,0.24,0.38,0.93,0.28,0.19,0.35,0.27,0.41,0.89,0.24],
+    [0.28,0.21,0.45,0.52,0.31,0.87,0.24,0.18,0.42,0.48,0.27,0.91]
+  ];
+
+  function cellColor(v){
+    if(v<0.3)return'#C0392B';
+    if(v<0.6)return'#E8D5B0';
+    if(v<0.85)return'#84B59F';
+    return'#27AE60';
+  }
+
+  var labelsEl=document.getElementById('heatmap-labels');
+  var colLabelsEl=document.getElementById('heatmap-col-labels');
+  var gridEl=document.getElementById('heatmap-grid');
+  var tooltip=document.getElementById('heatmap-tooltip');
+
+  pathways.forEach(function(p){
+    var d=document.createElement('div');d.className='heatmap-label';d.textContent=p;labelsEl.appendChild(d);
+  });
+  drugs.forEach(function(dr){
+    var d=document.createElement('div');d.className='heatmap-col-label';d.textContent=dr;colLabelsEl.appendChild(d);
+  });
+
+  var allCells=[];
+  data.forEach(function(row,ri){
+    row.forEach(function(val,ci){
+      var cell=document.createElement('div');
+      cell.className='heatmap-cell';
+      cell.style.background=cellColor(val);
+      cell.style.transitionDelay=(ci*30)+'ms';
+      cell.setAttribute('data-drug',drugs[ci]);
+      cell.setAttribute('data-pathway',pathways[ri]);
+      cell.setAttribute('data-value',val.toFixed(2));
+      gridEl.appendChild(cell);
+      allCells.push(cell);
+
+      cell.addEventListener('mouseenter',function(e){
+        var status,statusColor;
+        if(val>=0.85){status='Highly Sensitive';statusColor='#27AE60';}
+        else if(val>=0.6){status='Sensitive';statusColor='#4A7C59';}
+        else if(val>=0.3){status='Intermediate';statusColor='#E67E22';}
+        else{status='Resistant';statusColor='#C0392B';}
+        var bold=val>=0.85||val<0.3?'font-weight:700;':'';
+        tooltip.innerHTML=
+          '<div style="font-weight:600;">'+drugs[ci]+' — '+pathways[ri]+'</div>'+
+          '<div>Sensitivity score: '+val.toFixed(2)+'</div>'+
+          '<div style="color:'+statusColor+';'+bold+'">Status: '+status+'</div>';
+        tooltip.style.display='block';
+      });
+      cell.addEventListener('mousemove',function(e){
+        tooltip.style.left=(e.clientX+14)+'px';
+        tooltip.style.top=(e.clientY-10)+'px';
+      });
+      cell.addEventListener('mouseleave',function(){tooltip.style.display='none';});
+    });
+  });
+
+  // Wave-in animation
+  var heatmapObs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        allCells.forEach(function(c){c.classList.add('visible');});
+        heatmapObs.disconnect();
+      }
+    });
+  },{threshold:0.1});
+  heatmapObs.observe(gridEl);
+})();
+
+// ===== FILE DROP ZONE =====
+(function(){
+  var drop=document.getElementById('fileDrop');
+  var input=document.getElementById('fileInput');
+  if(!drop||!input)return;
+  drop.addEventListener('click',function(){input.click();});
+  input.addEventListener('change',function(){
+    if(input.files.length)drop.textContent=input.files[0].name;
+  });
+  drop.addEventListener('dragover',function(e){e.preventDefault();drop.style.borderColor='#4A7C59';drop.style.background='#f5f9f6';});
+  drop.addEventListener('dragleave',function(){drop.style.borderColor='#E8E3DB';drop.style.background='';});
+  drop.addEventListener('drop',function(e){e.preventDefault();drop.style.borderColor='#E8E3DB';drop.style.background='';
+    if(e.dataTransfer.files.length){drop.textContent=e.dataTransfer.files[0].name;}
+  });
+})();
+
+// ===== SIMULATION =====
+(function(){
+  var btn=document.getElementById('runSimBtn');
+  var panel=document.getElementById('outputPanel');
+  if(!btn||!panel)return;
+
+  var drugDB={
+    'Non-Small Cell Lung Cancer':[
+      {name:'Erlotinib',mech:'EGFR tyrosine kinase inhibitor',pct:91},
+      {name:'Osimertinib',mech:'Third-gen EGFR inhibitor',pct:88},
+      {name:'Olaparib',mech:'PARP inhibitor',pct:72},
+      {name:'Everolimus',mech:'mTOR inhibitor',pct:61},
+      {name:'Bevacizumab',mech:'VEGF monoclonal antibody',pct:56}
+    ],
+    'Colorectal Adenocarcinoma':[
+      {name:'Bevacizumab',mech:'VEGF monoclonal antibody',pct:87},
+      {name:'Ramucirumab',mech:'VEGFR2 antagonist',pct:82},
+      {name:'Alpelisib',mech:'PI3K alpha inhibitor',pct:74},
+      {name:'Idelalisib',mech:'PI3K delta inhibitor',pct:58},
+      {name:'Palbociclib',mech:'CDK4/6 inhibitor',pct:51}
+    ],
+    'Triple-Negative Breast Cancer':[
+      {name:'Olaparib',mech:'PARP inhibitor',pct:93},
+      {name:'Talazoparib',mech:'PARP inhibitor (potent)',pct:89},
+      {name:'Alpelisib',mech:'PI3K alpha inhibitor',pct:71},
+      {name:'Everolimus',mech:'mTOR inhibitor',pct:55},
+      {name:'Erlotinib',mech:'EGFR tyrosine kinase inhibitor',pct:44}
+    ],
+    'Glioblastoma Multiforme':[
+      {name:'Everolimus',mech:'mTOR inhibitor',pct:89},
+      {name:'Temsirolimus',mech:'mTOR inhibitor (IV)',pct:92},
+      {name:'Bevacizumab',mech:'VEGF monoclonal antibody',pct:68},
+      {name:'Erlotinib',mech:'EGFR tyrosine kinase inhibitor',pct:42},
+      {name:'Idelalisib',mech:'PI3K delta inhibitor',pct:38}
+    ],
+    'Pancreatic Ductal Adenocarcinoma':[
+      {name:'Olaparib',mech:'PARP inhibitor',pct:88},
+      {name:'Erlotinib',mech:'EGFR tyrosine kinase inhibitor',pct:61},
+      {name:'Alpelisib',mech:'PI3K alpha inhibitor',pct:54},
+      {name:'Palbociclib',mech:'CDK4/6 inhibitor',pct:48},
+      {name:'Ramucirumab',mech:'VEGFR2 antagonist',pct:44}
+    ]
+  };
+
+  btn.addEventListener('click',function(){
+    var pid=document.getElementById('patientId').value.trim()||'PT-DEMO';
+    var cancer=document.getElementById('cancerType').value;
+    var stageEl=document.querySelector('input[name="stage"]:checked');
+    var stage=stageEl?stageEl.value:'I';
+    var egfr=document.getElementById('egfrToggle').checked;
+    var tp53=document.getElementById('tp53Toggle').checked;
+
+    // Loading state
+    panel.innerHTML='<div class="spinner-wrap"><div class="spinner"></div><div class="spinner-text">Processing patient genomic data...</div></div>';
+
+    setTimeout(function(){
+      var drugs=drugDB[cancer]||drugDB['Non-Small Cell Lung Cancer'];
+      var now=new Date();
+      var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var dd=String(now.getDate()).padStart(2,'0');
+      var timeStr=dd+' '+months[now.getMonth()]+' '+now.getFullYear()+', '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+
+      var html='<div class="results-panel">';
+      html+='<div class="results-header">Simulation Report — '+pid+'</div>';
+      html+='<div class="results-sub">'+cancer+' | Stage '+stage+'</div>';
+      html+='<div class="results-time">Generated: '+timeStr+'</div>';
+
+      drugs.forEach(function(d,i){
+        html+='<div class="drug-row">';
+        html+='<div class="drug-rank">'+(i+1)+'</div>';
+        html+='<div class="drug-info"><div class="drug-name">'+d.name+'</div><div class="drug-mech">'+d.mech+'</div>';
+        html+='<div class="drug-bar-track"><div class="drug-bar-fill" style="width:0%;"></div></div></div>';
+        html+='<div class="drug-pct">'+d.pct+'%</div>';
+        html+='</div>';
+      });
+
+      if(egfr){
+        html+='<div class="note-card">EGFR mutation detected — EGFR-targeted therapies have elevated priority in this ranking.</div>';
+      }
+      if(tp53){
+        html+='<div class="note-card" style="margin-top:8px;">TP53 loss of function detected — DNA damage repair pathway drugs may show enhanced efficacy.</div>';
+      }
+
+      html+='<div class="results-disclaimer">This is a simulated output for demonstration purposes. Clinical deployment requires institutional validation.</div>';
+      html+='</div>';
+      panel.innerHTML=html;
+
+      // Animate bars
+      setTimeout(function(){
+        var fills=panel.querySelectorAll('.drug-bar-fill');
+        fills.forEach(function(bar,idx){
+          bar.style.width=drugs[idx].pct+'%';
+        });
+      },50);
+    },2200);
+  });
+})();
+
+</script>
+</body>
+</html>
