@@ -6,24 +6,6 @@
 
 
 
-\[!\[License](https://img.shields.io/badge/License-Apache\_2.0-blue.svg)](LICENSE)
-
-\[!\[Status](https://img.shields.io/badge/Status-Prototype\_Development-orange)]()
-
-\[!\[Competition](https://img.shields.io/badge/Submitted\_To-Young\_Medicine\_2025-teal)]()
-
-\[!\[Institution](https://img.shields.io/badge/Institution-Bversity\_School\_of\_Biosciences-navy)]()
-
-
-
-> \*\*Decision-support tool — the oncologist decides treatment. Our output informs; it does not prescribe.\*\*
-
-
-
-\---
-
-
-
 \## Table of Contents
 
 
@@ -687,28 +669,6 @@ If you use this framework, pipeline, or benchmark dataset in your research, plea
 }
 
 ```
-
-
-
-\---
-
-
-
-\## License
-
-
-
-Licensed under the \*\*Apache 2.0 License\*\* — see the \[LICENSE](LICENSE) file for details.
-
-
-
-This means you are free to use, modify, and distribute this work, including for commercial purposes, provided attribution is given and the licence terms are maintained.
-
-
-
-\---
-
-
 
 \*Bversity School of Biosciences · All-Russian Scientific School "Young Medicine" · Biomedical Engineering and Digital Health Technologies\*
 
